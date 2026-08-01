@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Drill — daily practice</title>
+<style>
+  /* Same tokens as the looper so the two read as one family when they merge. */
+  :root{
+    --bg:#16140F; --surface:#211E17; --surface-2:#2C281E; --line:#3A3528;
+    --text:#EDE7D9; --muted:#8A8270; --spot:#E8A33D; --spot-hi:#F4C66B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{min-height:100%;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 32px);
+    line-height:1.4;
+  }
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;}
+  .wrap{max-width:560px;margin:0 auto;padding:0 18px;}
+
+  header{display:flex;align-items:baseline;justify-content:space-between;padding:18px 18px 8px;max-width:560px;margin:0 auto;}
+  header h1{font-size:15px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;}
+  header h1 span{color:var(--spot);}
+  header .hright{text-align:right;}
+  header .date{font-size:12px;color:var(--muted);}
+  header .streak{font-size:12px;color:var(--spot);margin-top:2px;}
+
+  /* hero drill card */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:22px 20px;margin-top:12px;}
+  .pick{padding:14px 0;border-bottom:1px solid var(--line);}
+  .pick:last-of-type{border-bottom:none;}
+  .pick .pickhead{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .pick .cat{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+  .pick .item{font-size:24px;font-weight:700;margin-top:4px;color:var(--spot);line-height:1.2;}
+  .card .none{color:var(--muted);font-size:14px;padding:6px 0;}
+  .lock{background:none;border:1px solid var(--line);color:var(--muted);border-radius:999px;
+    padding:4px 10px;font-size:10.5px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+  .lock.on{border-color:var(--spot);color:var(--spot);}
+  .lock:active{opacity:.7;}
+
+  .reroll{margin-top:16px;width:100%;background:var(--spot);color:#1b1206;border:none;border-radius:11px;
+    padding:14px;font-size:15px;font-weight:700;cursor:pointer;}
+  .reroll:active{background:var(--spot-hi);}
+  .complete{margin-top:10px;width:100%;background:none;color:var(--text);border:1px solid var(--line);border-radius:11px;
+    padding:13px;font-size:14px;font-weight:600;cursor:pointer;}
+  .complete.done{border-color:var(--spot);color:var(--spot);}
+  .complete:active{opacity:.8;}
+  .note{margin-top:10px;font-size:11.5px;color:var(--muted);text-align:center;}
+
+  h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+    margin:26px 0 10px;font-weight:600;}
+
+  /* decks (editable categories) */
+  .deck{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;}
+  .deck .dh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .deck .dh .name{font-size:14px;font-weight:600;}
+  .deck .dh .rm{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;}
+  .deck .dh .rm:active{color:var(--spot);}
+  .items{display:flex;flex-wrap:wrap;gap:7px;}
+  .tag{display:inline-flex;align-items:center;gap:7px;background:var(--surface-2);border:1px solid var(--line);
+    border-radius:999px;padding:6px 10px;font-size:13px;}
+  .tag button{background:none;border:none;color:var(--muted);font-size:15px;line-height:1;cursor:pointer;padding:0;}
+  .tag button:active{color:var(--spot);}
+  .add{display:flex;gap:7px;margin-top:10px;}
+  .add input{flex:1;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:9px;
+    padding:9px 11px;font-size:14px;}
+  .add input::placeholder{color:var(--muted);}
+  .add button{background:var(--surface-2);color:var(--text);border:1px solid var(--line);border-radius:9px;
+    padding:9px 14px;font-size:14px;cursor:pointer;}
+  .add button:active{background:var(--surface);}
+  .newdeck{display:flex;gap:7px;margin-top:4px;}
+  .newdeck input{flex:1;background:var(--bg);color:var(--text);border:1px dashed var(--line);border-radius:9px;
+    padding:9px 11px;font-size:14px;}
+  .newdeck button{background:none;color:var(--spot);border:1px dashed var(--line);border-radius:9px;
+    padding:9px 14px;font-size:14px;cursor:pointer;}
+
+  /* history */
+  .hist{font-size:13px;}
+  .hist .h{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);}
+  .hist .h:last-child{border-bottom:none;}
+  .hist .hd{color:var(--muted);min-width:88px;}
+  .hist .hp{flex:1;}
+  .hist .hp b{color:var(--spot);font-weight:600;}
+  .empty{color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Drill<span>.</span></h1>
+  <div class="hright">
+    <div class="date mono" id="todayLabel"></div>
+    <div class="streak mono" id="streakLabel"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card" id="card"></div>
+  <button class="reroll" id="reroll">New draw</button>
+  <button class="complete" id="completeBtn"></button>
+  <p class="note">Draws favor grooves &amp; concepts you haven’t drilled recently. Tap 🔓 Lock this to keep a pick across days.</p>
+
+  <h2>Your decks</h2>
+  <div id="decks"></div>
+  <div class="newdeck">
+    <input id="newDeckName" placeholder="New deck (e.g. Footwork)">
+    <button id="addDeck">Add</button>
+  </div>
+
+  <h2>Recent</h2>
+  <div class="hist" id="history"></div>
+</div>
+
+<script>
+/* =============================================================================
+   Daily practice drawer. Small text data → localStorage (no IndexedDB needed).
+   Shape under key 'drilldeck':
+     { categories:[{name, items:[]}], lastSeen:{ "Cat::item": "YYYY-MM-DD" },
+       history:[{ date, picks:{ catName:item } }] }
+   Draw logic: one item per non-empty category, weighted by how long since each
+   item was last drawn (stale = heavier odds), so vocabulary cycles instead of
+   repeating. One auto-draw per calendar day; re-roll overwrites today's.
+   ========================================================================== */
+
+const KEY = 'drilldeck';
+const DEFAULT = {
+  categories: [
+    { name:'Grooves',  items:['Down bounce','Up bounce','Side-to-side','Rock','Chest pop'] },
+    { name:'Concepts', items:['Musicality — hit the accents','Levels (high / mid / low)',
+                              'Dynamics (fast / slow)','Isolations','Texture (sharp / smooth)','Travel & direction'] }
+  ],
+  lastSeen: {},
+  history: [],
+  lockedItem: {},         // { catName: item } — locked picks skip the weighted draw and repeat as-is
+  completedDates: []      // ["YYYY-MM-DD", ...] — days you marked the drill done, drives the streak
+};
+
+let data = load();
+function load(){
+  try {
+    const d = JSON.parse(localStorage.getItem(KEY)) || structuredClone(DEFAULT);
+    d.lockedItem = d.lockedItem || {};        // back-compat for saves made before locking existed
+    d.completedDates = d.completedDates || []; // back-compat for saves made before streaks existed
+    return d;
+  }
+  catch(e){ return structuredClone(DEFAULT); }
+}
+function persist(){ try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e){ console.error(e); } }
+
+/* ---- dates ---------------------------------------------------------------- */
+function todayKey(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function daysBetween(aKey, bKey){
+  const a=new Date(aKey+'T00:00'), b=new Date(bKey+'T00:00');
+  return Math.round((b-a)/86400000);
+}
+function prettyDate(key){
+  const d=new Date(key+'T00:00');
+  return d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+}
+function dateKey(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+/* ---- streak ----------------------------------------------------------------
+   Counts consecutive completed days ending today. If today isn't marked done
+   yet, the streak still shows as "alive" based on yesterday — it only breaks
+   once a full day passes with nothing marked, same as Duolingo. ------------- */
+function computeStreak(){
+  const done = new Set(data.completedDates);
+  const cursor = new Date();
+  if (!done.has(todayKey())) cursor.setDate(cursor.getDate()-1);
+  let streak = 0;
+  while (done.has(dateKey(cursor))){ streak++; cursor.setDate(cursor.getDate()-1); }
+  return streak;
+}
+
+/* ---- weighted draw -------------------------------------------------------- */
+function pickWeighted(items, catName, today){
+  const weights = items.map(it => {
+    const ls = data.lastSeen[catName+'::'+it];
+    if (!ls) return 30;                              // never drawn → strong pull
+    return Math.min(Math.max(1, daysBetween(ls, today)), 30);
+  });
+  const total = weights.reduce((a,b)=>a+b,0);
+  let r = Math.random()*total;
+  for (let i=0;i<items.length;i++){ if ((r-=weights[i])<=0) return items[i]; }
+  return items[items.length-1];
+}
+
+function draw(){
+  const today = todayKey();
+  const picks = {};
+  for (const cat of data.categories){
+    if (!cat.items.length) continue;
+    const locked = data.lockedItem[cat.name];
+    if (locked && cat.items.includes(locked)){
+      picks[cat.name] = locked;                 // locked → repeat, skip the weighted draw
+    } else {
+      if (locked) delete data.lockedItem[cat.name];  // item was edited/removed → stale lock, clear it
+      picks[cat.name] = pickWeighted(cat.items, cat.name, today);
+    }
+  }
+  for (const [cat,item] of Object.entries(picks)) data.lastSeen[cat+'::'+item] = today;
+  data.history = data.history.filter(h => h.date !== today);   // replace today's
+  data.history.unshift({ date:today, picks });
+  data.history = data.history.slice(0, 30);
+  persist(); renderCard(picks); renderHistory();
+}
+
+/* ---- render: today's card ------------------------------------------------- */
+function renderCard(picks){
+  const card = el('card');
+  const entries = Object.entries(picks||{});
+  if (!entries.length){
+    card.innerHTML = `<div class="none">No drills yet — add some grooves and concepts below, then draw.</div>`;
+    return;
+  }
+  card.innerHTML = entries.map(([cat,item]) => {
+    const locked = !!data.lockedItem[cat];
+    return `<div class="pick">
+      <div class="pickhead">
+        <div class="cat">${esc(cat)}</div>
+        <button class="lock ${locked?'on':''}" data-cat="${esc(cat)}">${locked ? '🔒 Repeating' : '🔓 Lock this'}</button>
+      </div>
+      <div class="item">${esc(item)}</div>
+    </div>`;
+  }).join('');
+  card.querySelectorAll('.lock').forEach(btn => btn.addEventListener('click', () => {
+    const cat = btn.dataset.cat;
+    if (data.lockedItem[cat]) delete data.lockedItem[cat];
+    else data.lockedItem[cat] = picks[cat];
+    persist();
+    renderCard(picks);   // same picks stay on screen — only the lock state changes
+  }));
+}
+
+/* ---- render: decks (editable) --------------------------------------------- */
+function renderDecks(){
+  const wrap = el('decks'); wrap.innerHTML='';
+  data.categories.forEach((cat, ci) => {
+    const d = document.createElement('div'); d.className='deck';
+    d.innerHTML =
+      `<div class="dh"><span class="name">${esc(cat.name)}</span><button class="rm">remove deck</button></div>
+       <div class="items">${cat.items.map((it,ii)=>
+          `<span class="tag">${esc(it)}<button data-i="${ii}" title="Remove">×</button></span>`).join('')
+          || '<span class="empty">No items yet.</span>'}</div>
+       <div class="add"><input placeholder="Add to ${esc(cat.name)}…"><button>Add</button></div>`;
+    // remove item
+    d.querySelectorAll('.tag button').forEach(b =>
+      b.addEventListener('click', () => { cat.items.splice(+b.dataset.i,1); persist(); renderDecks(); }));
+    // remove deck
+    d.querySelector('.rm').addEventListener('click', () => {
+      if (confirm(`Remove the “${cat.name}” deck?`)){ data.categories.splice(ci,1); persist(); renderDecks(); }
+    });
+    // add item
+    const inp = d.querySelector('.add input'), btn = d.querySelector('.add button');
+    const addItem = () => { const val=inp.value.trim(); if(!val) return;
+      if(!cat.items.includes(val)) cat.items.push(val); inp.value=''; persist(); renderDecks(); };
+    btn.addEventListener('click', addItem);
+    inp.addEventListener('keydown', e => { if(e.key==='Enter') addItem(); });
+    wrap.appendChild(d);
+  });
+}
+
+/* ---- render: history ------------------------------------------------------ */
+function renderHistory(){
+  const h = el('history');
+  if (!data.history.length){ h.innerHTML = '<div class="empty">Your past draws will show here.</div>'; return; }
+  h.innerHTML = data.history.slice(0,7).map(entry =>
+    `<div class="h"><span class="hd mono">${prettyDate(entry.date)}</span>
+       <span class="hp">${Object.values(entry.picks).map(esc).map(s=>`<b>${s}</b>`).join(' · ')}</span></div>`).join('');
+}
+
+/* ---- helpers + wiring ----------------------------------------------------- */
+const el = id => document.getElementById(id);
+function esc(s){ return String(s).replace(/[&<>"]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
+
+/* ---- streak UI + mark-complete toggle -------------------------------------- */
+function renderStreak(){
+  const n = computeStreak();
+  el('streakLabel').textContent = n > 0 ? `🔥 ${n} day${n===1?'':'s'}` : '';
+}
+function renderCompleteButton(){
+  const done = data.completedDates.includes(todayKey());
+  const btn = el('completeBtn');
+  btn.textContent = done ? '✓ Today\u2019s drill complete' : 'Mark today\u2019s drill complete';
+  btn.classList.toggle('done', done);
+}
+el('completeBtn').addEventListener('click', () => {
+  const today = todayKey();
+  const i = data.completedDates.indexOf(today);
+  if (i === -1) data.completedDates.push(today); else data.completedDates.splice(i,1);
+  persist(); renderCompleteButton(); renderStreak();
+});
+
+el('reroll').addEventListener('click', draw);
+el('addDeck').addEventListener('click', () => {
+  const name = el('newDeckName').value.trim(); if(!name) return;
+  if (!data.categories.some(c => c.name.toLowerCase()===name.toLowerCase())){
+    data.categories.push({ name, items:[] }); persist(); renderDecks();
+  }
+  el('newDeckName').value='';
+});
+el('newDeckName').addEventListener('keydown', e => { if(e.key==='Enter') el('addDeck').click(); });
+
+/* ---- boot: show today's draw, or make one ---------------------------------- */
+el('todayLabel').textContent = prettyDate(todayKey());
+(function boot(){
+  const today = todayKey();
+  const todays = data.history.find(h => h.date === today);
+  renderDecks();
+  if (todays) { renderCard(todays.picks); renderHistory(); }
+  else draw();   // first open of the day → draw automatically
+  renderStreak();
+  renderCompleteButton();
+})();
+</script>
+</body>
+</html>
