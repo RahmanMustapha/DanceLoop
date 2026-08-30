@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>Practice — freestyle training</title>
+<title>Loop — movement study</title>
 <style>
   :root{
     --bg:#16140F; --surface:#211E17; --surface-2:#2C281E; --line:#3A3528;
@@ -21,29 +21,15 @@
   }
   .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;}
 
-  /* ---- shared header + tab bar ---------------------------------------------- */
-  header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;
-    border-bottom:1px solid var(--line);flex:0 0 auto;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);}
   header h1{font-size:15px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;}
   header h1 span{color:var(--spot);}
-  header .hright{text-align:right;}
-  header .date{font-size:12px;color:var(--muted);}
-  header .streak{font-size:12px;color:var(--spot);margin-top:2px;}
   .hbtns{display:flex;gap:8px;align-items:center;}
   .pick{background:var(--surface-2);color:var(--text);border:1px solid var(--line);border-radius:9px;
     padding:9px 13px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;}
   .pick:active{background:var(--surface);}
   input[type=file]{display:none;}
 
-  .tabbar{display:flex;flex:0 0 auto;border-bottom:1px solid var(--line);}
-  .tabbtn{flex:1;background:var(--surface);color:var(--muted);border:none;padding:11px;
-    font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
-    border-bottom:2px solid transparent;}
-  .tabbtn.active{color:var(--spot);border-bottom-color:var(--spot);background:var(--surface-2);}
-  .tab-panel{display:none;}
-  .tab-panel.active{display:contents;}
-
-  /* ---- Study tab -------------------------------------------------------------- */
   .stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#000;position:relative;}
   video{max-width:100%;max-height:100%;display:block;background:#000;}
   .empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -87,7 +73,7 @@
 
   .hint{margin-top:12px;font-size:11.5px;color:var(--muted);line-height:1.5;}
 
-  /* library slide-over */
+  /* ---- Library slide-over -------------------------------------------------- */
   .overlay{position:fixed;inset:0;z-index:50;display:flex;}
   .overlay[hidden]{display:none;}
   .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55);}
@@ -100,6 +86,7 @@
     border-bottom:1px solid var(--line);font-weight:600;letter-spacing:.04em;}
   .libhead .x{background:none;border:none;color:var(--spot);font-size:14px;font-weight:600;cursor:pointer;}
 
+  /* folder filter chips */
   .folderbar{display:flex;gap:6px;padding:10px 12px;overflow-x:auto;border-bottom:1px solid var(--line);
     -webkit-overflow-scrolling:touch;}
   .chip{flex:0 0 auto;background:var(--surface-2);color:var(--muted);border:1px solid var(--line);
@@ -122,184 +109,95 @@
     padding:6px 8px;border-radius:8px;min-width:40px;}
   .del:active{color:var(--out);}
   .libempty{padding:28px 22px;color:var(--muted);font-size:13px;line-height:1.5;}
+
   @media (prefers-reduced-motion: reduce){ .library{animation:none;} }
 
-  /* ---- Drill tab -------------------------------------------------------------- */
-  .wrap{flex:1;min-height:0;overflow-y:auto;align-self:stretch;max-width:560px;margin:0 auto;
-    padding:18px 18px 32px;width:100%;}
-
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 20px;}
-  .drillpick{padding:14px 0;border-bottom:1px solid var(--line);}
-  .drillpick:last-of-type{border-bottom:none;}
-  .drillpick .cat{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
-  .drillpick .item{font-size:24px;font-weight:700;margin-top:4px;color:var(--spot);line-height:1.2;}
-  .card .none{color:var(--muted);font-size:14px;padding:6px 0;}
-
-  .reroll{margin-top:16px;width:100%;background:var(--spot);color:#1b1206;border:none;border-radius:11px;
-    padding:14px;font-size:15px;font-weight:700;cursor:pointer;}
-  .reroll:active{background:var(--spot-hi);}
-  .complete{margin-top:10px;width:100%;background:none;color:var(--text);border:1px solid var(--line);border-radius:11px;
-    padding:13px;font-size:14px;font-weight:600;cursor:pointer;}
-  .complete.done{border-color:var(--spot);color:var(--spot);}
-  .complete:active{opacity:.8;}
-  .note{margin-top:10px;font-size:11.5px;color:var(--muted);text-align:center;}
-
-  h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
-    margin:26px 0 10px;font-weight:600;}
-
-  .deck{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;}
-  .deck .dh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-  .deck .dh .name{font-size:14px;font-weight:600;}
-  .deck .dh .rm{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;}
-  .deck .dh .rm:active{color:var(--spot);}
-  .items{display:flex;flex-wrap:wrap;gap:7px;}
-  .tag{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);
-    border-radius:999px;padding:6px 10px;font-size:13px;}
-  .tag.pinned{border-color:var(--spot);}
-  .tag button{background:none;border:none;color:var(--muted);font-size:14px;line-height:1;cursor:pointer;padding:0;}
-  .tag .pin{font-size:12px;}
-  .tag button:active{color:var(--spot);}
-  .add{display:flex;gap:7px;margin-top:10px;}
-  .add input{flex:1;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:9px;
-    padding:9px 11px;font-size:14px;}
-  .add input::placeholder{color:var(--muted);}
-  .add button{background:var(--surface-2);color:var(--text);border:1px solid var(--line);border-radius:9px;
-    padding:9px 14px;font-size:14px;cursor:pointer;}
-  .add button:active{background:var(--surface);}
-  .newdeck{display:flex;gap:7px;margin-top:4px;}
-  .newdeck input{flex:1;background:var(--bg);color:var(--text);border:1px dashed var(--line);border-radius:9px;
-    padding:9px 11px;font-size:14px;}
-  .newdeck button{background:none;color:var(--spot);border:1px dashed var(--line);border-radius:9px;
-    padding:9px 14px;font-size:14px;cursor:pointer;}
-
-  .hist{font-size:13px;}
-  .hist .h{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);}
-  .hist .h:last-child{border-bottom:none;}
-  .hist .hd{color:var(--muted);min-width:88px;}
-  .hist .hp{flex:1;}
-  .hist .hp b{color:var(--spot);font-weight:600;}
-  .deckempty{color:var(--muted);font-size:13px;}
-
-  /* short-height (phone landscape): video-left / controls-right, drill fills the same footprint */
+  /* short-height (phone landscape): video-left / controls-right */
   @media (orientation: landscape) and (max-height: 520px){
-    body{display:grid;grid-template-columns:1fr minmax(260px,320px);grid-template-rows:auto auto 1fr;
-      grid-template-areas:"tabbar tabbar" "header panel" "stage panel";}
-    .tabbar{grid-area:tabbar;}
-    .tabbtn{padding:6px;font-size:10.5px;}
+    body{display:grid;grid-template-columns:1fr minmax(260px,320px);grid-template-rows:auto 1fr;
+      grid-template-areas:"header panel" "stage panel";}
     header{grid-area:header;padding:8px 14px;}
     .stage{grid-area:stage;min-width:0;min-height:0;}
     .panel{grid-area:panel;overflow-y:auto;border-top:none;border-left:1px solid var(--line);padding:12px 14px 14px;}
     .row,.speed{margin-top:10px;} .hint{display:none;}
-    .wrap{grid-row:2/4;grid-column:1/3;max-width:none;overflow-y:auto;}
   }
 </style>
 </head>
 <body>
 
 <header>
-  <h1 id="appTitle">Loop<span>.</span></h1>
-  <div class="hbtns" id="studyBtns">
+  <h1>Loop<span>.</span></h1>
+  <div class="hbtns">
     <button class="pick" id="libBtn">Library</button>
     <label class="pick">Add clip<input id="file" type="file" accept="video/*"></label>
   </div>
-  <div class="hright" id="drillBtns" hidden>
-    <div class="date mono" id="todayLabel"></div>
-    <div class="streak mono" id="streakLabel"></div>
-  </div>
 </header>
 
-<nav class="tabbar">
-  <button class="tabbtn active" data-tab="study">Study</button>
-  <button class="tabbtn" data-tab="drill">Drill</button>
-</nav>
-
-<section id="tab-study" class="tab-panel active">
-  <div class="stage">
-    <video id="v" playsinline webkit-playsinline></video>
-    <div class="empty" id="empty">
-      <strong>No clip loaded</strong>
-      <p>Add a video, or open one from your library. Set an in and out point, loop the slice, and slow it down to study the movement.</p>
-    </div>
+<div class="stage">
+  <video id="v" playsinline webkit-playsinline></video>
+  <div class="empty" id="empty">
+    <strong>No clip loaded</strong>
+    <p>Add a video, or open one from your library. Set an in and out point, loop the slice, and slow it down to study the movement.</p>
   </div>
+</div>
 
-  <div class="panel">
-    <div class="timeline" id="timeline">
-      <div class="band" id="band" style="display:none"></div>
-      <div class="handle in" id="hin" style="display:none"></div>
-      <div class="handle out" id="hout" style="display:none"></div>
-      <div class="playhead" id="playhead" style="display:none"></div>
-    </div>
-    <div class="times mono">
-      <span class="in" id="tIn">in —</span>
-      <span class="now" id="tNow">0:00.00</span>
-      <span class="out" id="tOut">out —</span>
-    </div>
-    <div class="row">
-      <button class="ctrl primary" id="play" disabled>Play</button>
-      <button class="ctrl" id="stepBack" disabled title="Previous frame">⟨ frame</button>
-      <button class="ctrl" id="stepFwd" disabled title="Next frame">frame ⟩</button>
-      <button class="ctrl" id="setIn" disabled>Set in</button>
-      <button class="ctrl" id="setOut" disabled>Set out</button>
-      <button class="ctrl" id="loopBtn" disabled>Loop: off</button>
-      <button class="ctrl" id="clear" disabled>Clear</button>
-    </div>
-    <div class="speed">
-      <span class="label">Speed</span>
-      <button class="sp" data-rate="1">1×</button>
-      <button class="sp" data-rate="0.75">¾</button>
-      <button class="sp" data-rate="0.5">½</button>
-      <button class="sp" data-rate="0.35">.35</button>
-      <button class="sp" data-rate="0.25">¼</button>
-      <button class="sp" data-rate="0.1">.1</button>
-    </div>
-    <p class="hint">Tap the timeline to seek. Drag the green/red handles to bound the slice. In/out points, speed, and folder save automatically per clip.</p>
+<div class="panel">
+  <div class="timeline" id="timeline">
+    <div class="band" id="band" style="display:none"></div>
+    <div class="handle in" id="hin" style="display:none"></div>
+    <div class="handle out" id="hout" style="display:none"></div>
+    <div class="playhead" id="playhead" style="display:none"></div>
   </div>
-
-  <div class="overlay" id="overlay" hidden>
-    <div class="backdrop" id="backdrop"></div>
-    <aside class="library">
-      <div class="libhead"><span>Library</span><button class="x" id="libClose">Done</button></div>
-      <div class="folderbar" id="folderbar"></div>
-      <div class="liblist" id="libList"></div>
-      <div class="libempty" id="libEmpty" hidden></div>
-    </aside>
+  <div class="times mono">
+    <span class="in" id="tIn">in —</span>
+    <span class="now" id="tNow">0:00.00</span>
+    <span class="out" id="tOut">out —</span>
   </div>
-</section>
-
-<section id="tab-drill" class="tab-panel">
-  <div class="wrap">
-    <div class="card" id="card"></div>
-    <button class="reroll" id="reroll">New draw</button>
-    <button class="complete" id="completeBtn"></button>
-    <p class="note">Draws favor grooves &amp; concepts you haven't drilled recently. Pin a few items in a deck below to draw only from those — the pool cycles instead of repeating the same one.</p>
-
-    <h2>Your decks</h2>
-    <div id="decks"></div>
-    <div class="newdeck">
-      <input id="newDeckName" placeholder="New deck (e.g. Footwork)">
-      <button id="addDeck">Add</button>
-    </div>
-
-    <h2>Recent</h2>
-    <div class="hist" id="history"></div>
+  <div class="row">
+    <button class="ctrl primary" id="play" disabled>Play</button>
+    <button class="ctrl" id="stepBack" disabled title="Previous frame">⟨ frame</button>
+    <button class="ctrl" id="stepFwd" disabled title="Next frame">frame ⟩</button>
+    <button class="ctrl" id="setIn" disabled>Set in</button>
+    <button class="ctrl" id="setOut" disabled>Set out</button>
+    <button class="ctrl" id="loopBtn" disabled>Loop: off</button>
+    <button class="ctrl" id="clear" disabled>Clear</button>
   </div>
-</section>
+  <div class="speed">
+    <span class="label">Speed</span>
+    <button class="sp" data-rate="1">1×</button>
+    <button class="sp" data-rate="0.75">¾</button>
+    <button class="sp" data-rate="0.5">½</button>
+    <button class="sp" data-rate="0.35">.35</button>
+    <button class="sp" data-rate="0.25">¼</button>
+    <button class="sp" data-rate="0.1">.1</button>
+  </div>
+  <p class="hint">Tap the timeline to seek. Drag the green/red handles to bound the slice. In/out points, speed, and folder save automatically per clip.</p>
+</div>
+
+<!-- Library slide-over -->
+<div class="overlay" id="overlay" hidden>
+  <div class="backdrop" id="backdrop"></div>
+  <aside class="library">
+    <div class="libhead"><span>Library</span><button class="x" id="libClose">Done</button></div>
+    <div class="folderbar" id="folderbar"></div>
+    <div class="liblist" id="libList"></div>
+    <div class="libempty" id="libEmpty" hidden></div>
+  </aside>
+</div>
 
 <script>
 /* =============================================================================
-   STORAGE (IndexedDB v2, db 'loop-study'):
+   STORAGE (IndexedDB v2):
      - 'clips' : light metadata (name, folder, in/out, rate, duration)
      - 'blobs' : heavy video bytes, fetched only when a clip is opened
-     - 'meta'  : key-value app state — the folder list (key 'folders') AND,
-                 now that Study and Drill are one app, the drill data
-                 (key 'drillState'). One database instead of IndexedDB +
-                 localStorage split across two separate pages.
+     - 'meta'  : key-value app state (currently the user's folder list)
+   Folders are an explicit, persisted list of names so empty folders can exist.
+   A clip's `folder` is a string; the default bucket is 'Unsorted'.
    ========================================================================== */
 
 const FPS = 30;
 const DB_NAME = 'loop-study', DB_VERSION = 2;
 const UNSORTED = 'Unsorted';
-const LEGACY_DRILL_KEY = 'drilldeck';   // old standalone drills.html's localStorage key
 
 function openDB(){
   return new Promise((res, rej) => {
@@ -308,7 +206,7 @@ function openDB(){
       const d = e.target.result;
       if (!d.objectStoreNames.contains('clips')) d.createObjectStore('clips', { keyPath:'id' });
       if (!d.objectStoreNames.contains('blobs')) d.createObjectStore('blobs');
-      if (!d.objectStoreNames.contains('meta'))  d.createObjectStore('meta');
+      if (!d.objectStoreNames.contains('meta'))  d.createObjectStore('meta');   // v2 add (non-destructive)
     };
     r.onsuccess = () => res(r.result);
     r.onerror = () => rej(r.error);
@@ -338,22 +236,21 @@ function deleteClipDB(id){
 const uid = () => (crypto.randomUUID ? crypto.randomUUID()
                    : Date.now() + '-' + Math.random().toString(36).slice(2));
 
-const el = id => document.getElementById(id);
-
-/* =============================================================================
-   STUDY — the looper, unchanged from before other than living in a <section>.
-   ========================================================================== */
+/* ---- state ---------------------------------------------------------------- */
 const v = document.getElementById('v');
 let inPt=null, outPt=null, looping=false, rate=1;
 let currentId=null, currentUrl=null, pendingRestore=null;
-let clips=[], clipsById=new Map(), folders=[], activeFolder=null;
+let clips=[], clipsById=new Map(), folders=[], activeFolder=null;  // null = show all
 
+/* ---- refs ----------------------------------------------------------------- */
+const el = id => document.getElementById(id);
 const timeline=el('timeline'), band=el('band'), hin=el('hin'), hout=el('hout'),
       playhead=el('playhead'), empty=el('empty'),
       tIn=el('tIn'), tNow=el('tNow'), tOut=el('tOut'),
       playBtn=el('play'), loopBtn=el('loopBtn');
 const ctrlButtons = ['play','stepBack','stepFwd','setIn','setOut','loopBtn','clear'].map(el);
 
+/* ---- helpers -------------------------------------------------------------- */
 function fmt(t){ if(t==null||isNaN(t))return '—'; const m=Math.floor(t/60),s=t%60; return m+':'+s.toFixed(2).padStart(5,'0'); }
 function fmtShort(t){ if(t==null||isNaN(t))return '0:00'; const m=Math.floor(t/60),s=Math.floor(t%60); return m+':'+String(s).padStart(2,'0'); }
 function escapeHtml(s){ return String(s).replace(/[&<>"]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
@@ -361,6 +258,7 @@ function setEnabled(on){ ctrlButtons.forEach(b => b.disabled = !on); }
 function applySpeed(r){ rate=r; v.playbackRate=r;
   document.querySelectorAll('.sp').forEach(x => x.classList.toggle('active', parseFloat(x.dataset.rate)===r)); }
 
+/* ---- save current clip's loop state --------------------------------------- */
 async function saveCurrent(){
   if (!currentId) return;
   const m = clipsById.get(currentId); if (!m) return;
@@ -370,8 +268,10 @@ async function saveCurrent(){
   try { await putClip(m); renderLibrary(); } catch(e){ console.error('save failed', e); }
 }
 
+/* ---- library / folders ---------------------------------------------------- */
 async function loadLibrary(){
   clips = (await allClips()) || [];
+  // migrate legacy/empty folder labels → Unsorted, persisting any fixes once
   for (const c of clips){
     if (!c.folder || c.folder === 'All'){ c.folder = UNSORTED; try{ await putClip(c); }catch(e){} }
   }
@@ -407,7 +307,7 @@ function renderLibrary(){
   if (shown.length === 0){
     emptyEl.hidden = false;
     emptyEl.textContent = clips.length === 0
-      ? 'No clips yet. Tap "Add clip" to import one — it will stay here between sessions.'
+      ? 'No clips yet. Tap “Add clip” to import one — it’ll stay here between sessions.'
       : 'No clips in this folder yet. Open a clip and reassign it here, or add one while this folder is selected.';
   } else emptyEl.hidden = true;
 
@@ -421,12 +321,12 @@ function renderLibrary(){
          <div class="nm">${escapeHtml(c.name)}</div>
          <div class="sub mono">
            <span>${fmtShort(c.duration)}</span>
-           ${hasLoop ? `<span class="badge">loop ${fmtShort(c.inPt)}-${fmtShort(c.outPt)}</span>` : ``}
-           ${c.rate && c.rate!==1 ? `<span>${c.rate}x</span>` : ``}
+           ${hasLoop ? `<span class="badge">loop ${fmtShort(c.inPt)}–${fmtShort(c.outPt)}</span>` : ``}
+           ${c.rate && c.rate!==1 ? `<span>${c.rate}×</span>` : ``}
          </div>
        </div>
        <select class="fsel">${opts.map(o=>`<option>${escapeHtml(o)}</option>`).join('')}</select>
-       <button class="del" title="Delete">x</button>`;
+       <button class="del" title="Delete">×</button>`;
     const sel = row.querySelector('.fsel');
     sel.value = c.folder;
     sel.addEventListener('click', e => e.stopPropagation());
@@ -444,7 +344,7 @@ async function createFolder(){
     folders.push(name);
     try { await setMeta('folders', folders); } catch(e){ console.error(e); }
   }
-  activeFolder = name;
+  activeFolder = name;            // jump to the folder you just made
   renderFolders(); renderLibrary();
 }
 async function setClipFolder(id, folder){
@@ -457,18 +357,18 @@ async function setClipFolder(id, folder){
 async function addClipFromFile(file){
   const id = uid();
   const meta = { id, name:file.name.replace(/\.[^.]+$/,''),
-                 folder: activeFolder || UNSORTED,
+                 folder: activeFolder || UNSORTED,   // land in the folder you're viewing
                  inPt:null, outPt:null, rate:1, duration:null,
                  addedAt:Date.now(), openedAt:Date.now() };
   try { await putBlob(id, file); await putClip(meta); }
-  catch(e){ console.error(e); alert('Could not save the clip - device storage may be full.'); return; }
+  catch(e){ console.error(e); alert('Could not save the clip — device storage may be full.'); return; }
   await loadLibrary();
   openClip(id);
 }
 async function openClip(id){
   const m = clipsById.get(id); if (!m) return;
   let blob; try { blob = await getBlob(id); } catch(e){ console.error(e); return; }
-  if (!blob){ alert('That clip\u2019s video data is missing.'); return; }
+  if (!blob){ alert('That clip’s video data is missing.'); return; }
   if (currentUrl) URL.revokeObjectURL(currentUrl);
   currentUrl = URL.createObjectURL(blob);
   currentId = id;
@@ -491,17 +391,20 @@ async function removeClip(id){
   await loadLibrary();
 }
 
+/* ---- library panel open/close --------------------------------------------- */
 function openLibrary(){ el('overlay').hidden=false; }
 function closeLibrary(){ el('overlay').hidden=true; }
 el('libBtn').addEventListener('click', openLibrary);
 el('libClose').addEventListener('click', closeLibrary);
 el('backdrop').addEventListener('click', closeLibrary);
 
+/* ---- file pick → import --------------------------------------------------- */
 el('file').addEventListener('change', e => {
   const f = e.target.files[0]; e.target.value='';
   if (f) addClipFromFile(f);
 });
 
+/* ---- load metadata → restore saved loop state ----------------------------- */
 v.addEventListener('loadedmetadata', () => {
   empty.style.display='none';
   inPt  = pendingRestore ? pendingRestore.inPt  : null;
@@ -515,14 +418,17 @@ v.addEventListener('loadedmetadata', () => {
   drawTimeline();
 });
 
+/* ---- play / pause --------------------------------------------------------- */
 playBtn.addEventListener('click', () => v.paused ? v.play() : v.pause());
 v.addEventListener('play',  () => playBtn.textContent='Pause');
 v.addEventListener('pause', () => playBtn.textContent='Play');
 
+/* ---- speed (saves) -------------------------------------------------------- */
 document.querySelectorAll('.sp').forEach(b =>
   b.addEventListener('click', () => { applySpeed(parseFloat(b.dataset.rate)); saveCurrent(); }));
 applySpeed(1);
 
+/* ---- in / out / loop / clear (save) --------------------------------------- */
 el('setIn').addEventListener('click', () => {
   inPt=v.currentTime; if (outPt!=null && inPt>=outPt) outPt=null; drawTimeline(); saveCurrent();
 });
@@ -538,9 +444,11 @@ el('clear').addEventListener('click', () => {
   drawTimeline(); saveCurrent();
 });
 
+/* ---- frame step ----------------------------------------------------------- */
 el('stepBack').addEventListener('click', () => { v.pause(); v.currentTime=Math.max(0, v.currentTime-1/FPS); });
 el('stepFwd').addEventListener('click',  () => { v.pause(); v.currentTime=Math.min(v.duration, v.currentTime+1/FPS); });
 
+/* ---- loop watcher + playhead (rAF) ---------------------------------------- */
 function frame(){
   if (v.duration){
     const lo=inPt??0, hi=outPt??v.duration;
@@ -553,6 +461,7 @@ function frame(){
 }
 requestAnimationFrame(frame);
 
+/* ---- draw band + handles -------------------------------------------------- */
 function drawTimeline(){
   const w=timeline.clientWidth, d=v.duration||1;
   tIn.textContent='in '+fmt(inPt); tOut.textContent='out '+fmt(outPt);
@@ -568,6 +477,7 @@ function drawTimeline(){
   }
 }
 
+/* ---- timeline interaction (pointer = mouse + touch) ----------------------- */
 function timeFromX(x){ const r=timeline.getBoundingClientRect();
   return Math.min(1, Math.max(0,(x-r.left)/r.width)) * (v.duration||0); }
 let dragging=null;
@@ -591,223 +501,8 @@ window.addEventListener('pointerup', () => {
 });
 window.addEventListener('resize', drawTimeline);
 
-/* =============================================================================
-   DRILL - daily practice drawer. Now lives in the same IndexedDB as Study,
-   under meta key 'drillState', instead of its own localStorage. Shape:
-     { categories:[{name, items:[]}], lastSeen:{ "Cat::item": "YYYY-MM-DD" },
-       history:[{ date, picks:{ catName:item } }],
-       lockedPool:{ catName:[item, ...] },   // pinned subset - draw cycles within it
-       completedDates:[ "YYYY-MM-DD", ... ] }
-   If a pinned pool exists for a category, the daily draw is restricted to that
-   pool (still weighted by staleness, so it rotates through your pins instead
-   of repeating one); an empty pool means "draw from everything," same as before.
-   ========================================================================== */
-const DRILL_DEFAULT = {
-  categories: [
-    { name:'Grooves',  items:['Down bounce','Up bounce','Side-to-side','Rock','Chest pop'] },
-    { name:'Concepts', items:['Musicality - hit the accents','Levels (high / mid / low)',
-                              'Dynamics (fast / slow)','Isolations','Texture (sharp / smooth)','Travel & direction'] }
-  ],
-  lastSeen: {}, history: [], lockedPool: {}, completedDates: []
-};
-let data = structuredClone(DRILL_DEFAULT);
-
-function todayKey(){
-  const d=new Date();
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
-function dateKey(d){
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-}
-function daysBetween(aKey, bKey){
-  const a=new Date(aKey+'T00:00'), b=new Date(bKey+'T00:00');
-  return Math.round((b-a)/86400000);
-}
-function prettyDate(key){
-  const d=new Date(key+'T00:00');
-  return d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
-}
-function computeStreak(){
-  const done = new Set(data.completedDates);
-  const cursor = new Date();
-  if (!done.has(todayKey())) cursor.setDate(cursor.getDate()-1);
-  let streak = 0;
-  while (done.has(dateKey(cursor))){ streak++; cursor.setDate(cursor.getDate()-1); }
-  return streak;
-}
-
-function pickWeighted(items, catName, today){
-  const weights = items.map(it => {
-    const ls = data.lastSeen[catName+'::'+it];
-    if (!ls) return 30;
-    return Math.min(Math.max(1, daysBetween(ls, today)), 30);
-  });
-  const total = weights.reduce((a,b)=>a+b,0);
-  let r = Math.random()*total;
-  for (let i=0;i<items.length;i++){ if ((r-=weights[i])<=0) return items[i]; }
-  return items[items.length-1];
-}
-
-function draw(){
-  const today = todayKey();
-  const picks = {};
-  for (const cat of data.categories){
-    if (!cat.items.length) continue;
-    const pool = (data.lockedPool[cat.name]||[]).filter(it => cat.items.includes(it));
-    const source = pool.length ? pool : cat.items;
-    picks[cat.name] = pickWeighted(source, cat.name, today);
-  }
-  for (const [cat,item] of Object.entries(picks)) data.lastSeen[cat+'::'+item] = today;
-  data.history = data.history.filter(h => h.date !== today);
-  data.history.unshift({ date:today, picks });
-  data.history = data.history.slice(0, 30);
-  persist(); renderCard(picks); renderHistory();
-}
-
-function renderCard(picks){
-  const card = el('card');
-  const entries = Object.entries(picks||{});
-  if (!entries.length){
-    card.innerHTML = `<div class="none">No drills yet - add some grooves and concepts below, then draw.</div>`;
-    return;
-  }
-  card.innerHTML = entries.map(([cat,item]) =>
-    `<div class="drillpick"><div class="cat">${esc(cat)}</div><div class="item">${esc(item)}</div></div>`).join('');
-}
-
-function renderDecks(){
-  const wrap = el('decks'); wrap.innerHTML='';
-  data.categories.forEach((cat, ci) => {
-    const pool = data.lockedPool[cat.name] || [];
-    const d = document.createElement('div'); d.className='deck';
-    d.innerHTML =
-      `<div class="dh"><span class="name">${esc(cat.name)}${pool.length?` &middot; <span style="color:var(--spot)">${pool.length} pinned</span>`:''}</span><button class="rm">remove deck</button></div>
-       <div class="items">${cat.items.map((it,ii)=>{
-          const pinned = pool.includes(it);
-          return `<span class="tag${pinned?' pinned':''}">`+
-            `<button class="pin" data-i="${ii}" title="${pinned?'Unpin from rotation':'Pin - draw only from pinned items'}">${pinned?'&#128204;':'&#128205;'}</button>`+
-            `${esc(it)}<button class="rmitem" data-i="${ii}" title="Remove">&times;</button></span>`;
-        }).join('') || '<span class="deckempty">No items yet.</span>'}</div>
-       <div class="add"><input placeholder="Add to ${esc(cat.name)}..."><button>Add</button></div>`;
-    d.querySelectorAll('.pin').forEach(b =>
-      b.addEventListener('click', () => {
-        const item = cat.items[+b.dataset.i];
-        const p = data.lockedPool[cat.name] || (data.lockedPool[cat.name]=[]);
-        const idx = p.indexOf(item);
-        if (idx===-1) p.push(item); else p.splice(idx,1);
-        if (!p.length) delete data.lockedPool[cat.name];
-        persist(); renderDecks();
-      }));
-    d.querySelectorAll('.rmitem').forEach(b =>
-      b.addEventListener('click', () => {
-        const item = cat.items[+b.dataset.i];
-        cat.items.splice(+b.dataset.i,1);
-        const p = data.lockedPool[cat.name];
-        if (p){ const idx=p.indexOf(item); if (idx!==-1) p.splice(idx,1); if(!p.length) delete data.lockedPool[cat.name]; }
-        persist(); renderDecks();
-      }));
-    d.querySelector('.dh .rm').addEventListener('click', () => {
-      if (confirm(`Remove the "${cat.name}" deck?`)){
-        delete data.lockedPool[cat.name]; data.categories.splice(ci,1); persist(); renderDecks();
-      }
-    });
-    const inp = d.querySelector('.add input'), btn = d.querySelector('.add button');
-    const addItem = () => { const val=inp.value.trim(); if(!val) return;
-      if(!cat.items.includes(val)) cat.items.push(val); inp.value=''; persist(); renderDecks(); };
-    btn.addEventListener('click', addItem);
-    inp.addEventListener('keydown', e => { if(e.key==='Enter') addItem(); });
-    wrap.appendChild(d);
-  });
-}
-
-function renderHistory(){
-  const h = el('history');
-  if (!data.history.length){ h.innerHTML = '<div class="deckempty">Your past draws will show here.</div>'; return; }
-  h.innerHTML = data.history.slice(0,7).map(entry =>
-    `<div class="h"><span class="hd mono">${prettyDate(entry.date)}</span>
-       <span class="hp">${Object.values(entry.picks).map(esc).map(s=>`<b>${s}</b>`).join(' &middot; ')}</span></div>`).join('');
-}
-
-function renderStreak(){
-  const n = computeStreak();
-  el('streakLabel').textContent = n > 0 ? `\u{1F525} ${n} day${n===1?'':'s'}` : '';
-}
-function renderCompleteButton(){
-  const done = data.completedDates.includes(todayKey());
-  const btn = el('completeBtn');
-  btn.textContent = done ? '\u2713 Today\u2019s drill complete' : 'Mark today\u2019s drill complete';
-  btn.classList.toggle('done', done);
-}
-el('completeBtn').addEventListener('click', () => {
-  const today = todayKey();
-  const i = data.completedDates.indexOf(today);
-  if (i === -1) data.completedDates.push(today); else data.completedDates.splice(i,1);
-  persist(); renderCompleteButton(); renderStreak();
-});
-
-function esc(s){ return String(s).replace(/[&<>"]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
-
-async function persist(){ try { await setMeta('drillState', data); } catch(e){ console.error(e); } }
-
-async function initDrill(){
-  let stored = null;
-  try { stored = await getMeta('drillState'); } catch(e){ console.error(e); }
-  if (!stored){
-    // bounded, one-time migration from the old standalone drills.html (localStorage)
-    try {
-      const legacy = JSON.parse(localStorage.getItem(LEGACY_DRILL_KEY));
-      if (legacy){
-        stored = legacy;
-        if (stored.lockedItem && !stored.lockedPool){          // old single-lock shape -> new pool shape
-          stored.lockedPool = {};
-          for (const [cat,item] of Object.entries(stored.lockedItem)) stored.lockedPool[cat] = [item];
-          delete stored.lockedItem;
-        }
-      }
-    } catch(e){ console.error(e); }
-  }
-  data = Object.assign(structuredClone(DRILL_DEFAULT), stored || {});
-  data.lockedPool = data.lockedPool || {};
-  data.completedDates = data.completedDates || [];
-  await persist();
-  try { localStorage.removeItem(LEGACY_DRILL_KEY); } catch(e){}
-
-  renderDecks();
-  const today = todayKey();
-  const todays = data.history.find(h => h.date === today);
-  if (todays) renderCard(todays.picks); else draw();
-  renderHistory();
-  renderStreak();
-  renderCompleteButton();
-}
-
-el('reroll').addEventListener('click', draw);
-el('addDeck').addEventListener('click', () => {
-  const name = el('newDeckName').value.trim(); if(!name) return;
-  if (!data.categories.some(c => c.name.toLowerCase()===name.toLowerCase())){
-    data.categories.push({ name, items:[] }); persist(); renderDecks();
-  }
-  el('newDeckName').value='';
-});
-el('newDeckName').addEventListener('keydown', e => { if(e.key==='Enter') el('addDeck').click(); });
-
-/* =============================================================================
-   TABS
-   ========================================================================== */
-document.querySelectorAll('.tabbtn').forEach(b => b.addEventListener('click', () => {
-  const tab = b.dataset.tab;
-  document.querySelectorAll('.tabbtn').forEach(x => x.classList.toggle('active', x===b));
-  document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
-  el('tab-'+tab).classList.add('active');
-  el('appTitle').innerHTML = tab==='study' ? 'Loop<span>.</span>' : 'Drill<span>.</span>';
-  el('studyBtns').hidden = tab!=='study';
-  el('drillBtns').hidden = tab!=='drill';
-}));
-
-/* ---- boot ------------------------------------------------------------------ */
-el('todayLabel').textContent = prettyDate(todayKey());
+/* ---- boot ----------------------------------------------------------------- */
 loadLibrary();
-initDrill();
 </script>
 </body>
 </html>
